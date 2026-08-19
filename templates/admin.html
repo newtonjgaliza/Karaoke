@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Karaoke do Attilas</title>
+    <!-- Google Fonts: Outfit for clean interface, DotGothic16 for the retro dot-matrix font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="admin-layout">
+        <!-- Sidebar or Header Panel -->
+        <aside class="sidebar">
+            <div class="brand">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Karaoke" class="logo">
+                <div class="brand-text">
+                    <h1 class="retro-font">ATTILAS</h1>
+                    <span class="badge">HOST PANEL</span>
+                </div>
+            </div>
+
+            <!-- Queue Statistics -->
+            <div class="stats-panel">
+                <div class="stat-card" id="stat-pending">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Na Fila</div>
+                </div>
+                <div class="stat-card" id="stat-playing">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Tocando</div>
+                </div>
+                <div class="stat-card" id="stat-completed">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Cantadas</div>
+                </div>
+            </div>
+
+            <!-- Sound Controller -->
+            <div class="audio-toggle-card">
+                <label class="switch-container">
+                    <input type="checkbox" id="audioToggle" checked>
+                    <span class="slider"></span>
+                </label>
+                <div class="audio-label-group">
+                    <span class="audio-title">Alertas Sonoros</span>
+                    <span class="audio-subtitle">Som para novos pedidos</span>
+                </div>
+            </div>
+
+            <!-- Quick Action controls -->
+            <div class="sidebar-actions">
+                <button onclick="clearHistory()" class="btn-secondary">
+                    <span>Limpar Histórico</span>
+                </button>
+                <a href="/" target="_blank" class="btn-link">Abrir Tela de Pedidos ↗</a>
+            </div>
+
+            <footer class="sidebar-footer" style="font-size: 0.7rem; color: var(--text-muted); text-align: center; border-top: 1px solid var(--border-color); padding-top: 1rem; width: 100%;">
+                <p>Newton Galiza. Todos os direitos reservados</p>
+            </footer>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="content-header">
+                <h2 class="section-title">Fila de Apresentações</h2>
+                
+                <!-- Search & Filters -->
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchBar" placeholder="Filtrar por nome, música ou referência..." oninput="filterQueue()">
+                </div>
+            </header>
+
+            <!-- Table Container -->
+            <div class="table-container">
+                <table class="queue-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Música</th>
+                            <th>Referência</th>
+                            <th>Informações Extras</th>
+                            <th class="actions-header">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="queueTableBody">
+                        <!-- Loaded dynamically via JS -->
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                <div class="loading-spinner"></div>
+                                Carregando fila de músicas...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
