@@ -1,0 +1,56 @@
+======================================================================
+                  🎤 INSTRUÇÕES DO KARAOKE DO ATTILAS 🎤
+======================================================================
+
+Olá, Attilas! Este é o seu novo sistema de fila de Karaokê. Ele foi projetado para rodar direto no seu computador local e receber pedidos de música de qualquer celular ou tablet que estiver conectado na mesma rede Wi-Fi do seu bar.
+
+Abaixo está o passo a passo bem simples de como usar:
+
+----------------------------------------------------------------------
+1. COMO INICIAR O SISTEMA (NO SEU NOTEBOOK)
+----------------------------------------------------------------------
+* Coloque o arquivo 'Karaoke_do_Attilas.exe' em uma pasta no seu computador (por exemplo, na Área de Trabalho).
+* Dê um duplo clique no arquivo 'Karaoke_do_Attilas.exe' para executá-lo.
+* Uma janela preta de terminal vai se abrir. NÃO FECHE ESSA JANELA! Ela é o servidor do seu karaokê. Se você fechá-la, o sistema desliga.
+* Na janela, você verá algumas linhas escritas. Preste atenção em uma linha parecida com esta:
+  
+  --> "Running on http://192.168.X.X:5000"
+
+  Esse número de IP (ex: 192.168.0.15 ou similar) é o endereço do seu servidor local.
+
+----------------------------------------------------------------------
+2. COMO OS CLIENTES FAZEM OS PEDIDOS (NO SALÃO)
+----------------------------------------------------------------------
+* Certifique-se de que os celulares/tablets dos clientes estejam conectados na MESMA REDE WI-FI do seu notebook.
+* Os clientes devem abrir o navegador do celular e digitar o endereço de IP que apareceu no seu terminal (ex: http://192.168.X.X:5000).
+* DICA DE OURO: Para facilitar, pegue esse endereço (ex: http://192.168.0.15:5000), jogue em um gerador de QR Code gratuito na internet (como o qr-code-generator.com), imprima o código e cole nas mesas do bar. Assim, os clientes só precisam escanear o QR Code para pedir a música na hora!
+* O cliente preenche o nome, a música, a referência (ex: cantor ou anime) e envia.
+
+----------------------------------------------------------------------
+3. COMO VOCÊ GERENCIA A FILA (PAINEL DO HOST)
+----------------------------------------------------------------------
+* No seu próprio notebook (onde o servidor está rodando), abra o navegador de internet (Chrome, Edge, etc.) e acesse:
+  
+  --> http://localhost:5000/admin   (ou http://127.0.0.1:5000/admin)
+
+* Esse é o seu painel de controle privado!
+* ALERTAS SONOROS: Sempre que um cliente enviar uma música nova, o painel emitirá um aviso sonoro (um toque de sinos) para você saber que há novidades na fila mesmo se estiver mexendo em outra aba do computador. Você pode desativar esse som a qualquer momento no interruptor da barra lateral.
+* PARA DAR O PLAY NA MÚSICA:
+  - Quando for a vez de alguém cantar, clique no botão "▶ Tocar" correspondente.
+  - O painel mudará o status da música para "TOCANDO" (piscando em neon) e abrirá automaticamente uma NOVA ABA no seu navegador buscando a versão de karaokê dessa música diretamente no YouTube!
+  - Escolha o vídeo que preferir no YouTube, arraste para a tela da TV ou Projetor do bar e dê o play.
+* CONTROLES DA FILA:
+  - "✓ Concluir": Marca a música como cantada e a envia para o histórico.
+  - "✕ Cancelar": Cancela o pedido se a pessoa não estiver ou desistir.
+  - "Pesquisa": Você pode digitar na barra de pesquisa no topo para encontrar a música ou o nome de algum cantor na fila rapidamente.
+  - "Limpar Histórico": Limpa os pedidos antigos (concluídos e cancelados) da tabela para manter a tela limpa.
+
+----------------------------------------------------------------------
+4. COMO O BANCO DE DADOS É SALVO
+----------------------------------------------------------------------
+* Na mesma pasta onde você colocou o 'Karaoke_do_Attilas.exe', um arquivo chamado 'db.json' será criado sozinho. 
+* Ele é o seu banco de dados. Ele salva a fila de pedidos automaticamente para que, mesmo se você fechar o programa ou reiniciar o notebook, nenhuma música que estava na fila seja perdida!
+
+Divirta-se e tenha um excelente evento! 🎶
+======================================================================
+Documento criado por Newton Galiza. Todos os direitos reservados.

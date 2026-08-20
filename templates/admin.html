@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin - Karaoke do Attilas</title>
+    <title>Painel Admin - Karaokê A Toca</title>
     <!-- Google Fonts: Outfit for clean interface, DotGothic16 for the retro dot-matrix font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/toca.jpg') }}">
 </head>
 <body>
     <div class="stars"></div>
@@ -17,9 +17,9 @@
         <!-- Sidebar or Header Panel -->
         <aside class="sidebar">
             <div class="brand">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Karaoke" class="logo">
+                <img src="{{ url_for('static', filename='images/toca.jpg') }}" alt="Logo Karaoke" class="logo">
                 <div class="brand-text">
-                    <h1 class="retro-font">ATTILAS</h1>
+                    <h1 class="retro-font">A TOCA</h1>
                     <span class="badge">HOST PANEL</span>
                 </div>
             </div>
@@ -54,6 +54,31 @@
 
             <!-- Quick Action controls -->
             <div class="sidebar-actions">
+                <div id="trialBadge" class="trial-info-badge" style="display: none;"></div>
+
+                <!-- Ngrok Tunnel Card -->
+                <div class="tunnel-card">
+                    <div class="tunnel-header">
+                        <span class="tunnel-title">Acesso Celular (Ngrok)</span>
+                        <span id="tunnelStatusIndicator" class="status-dot"></span>
+                    </div>
+                    <div id="tunnelSetupSection" style="display: block;">
+                        <input type="password" id="ngrokTokenInput" placeholder="Inserir Authtoken do Ngrok" class="tunnel-input" autocomplete="off">
+                        <button onclick="startTunnel()" class="btn-tunnel btn-start">Ativar Celular 3G/4G</button>
+                    </div>
+                    <div id="tunnelActiveSection" style="display: none;">
+                        <div class="tunnel-link-group">
+                            <input type="text" id="tunnelUrlVal" readonly class="tunnel-input-url">
+                            <button onclick="copyTunnelUrl()" class="btn-copy">📋</button>
+                        </div>
+                        <div class="qr-wrapper">
+                            <img id="tunnelQrCode" src="" alt="QR Code" class="qr-image">
+                            <span class="qr-label">Escaneie para pedir música</span>
+                        </div>
+                        <button onclick="stopTunnel()" class="btn-tunnel btn-stop">Parar Túnel</button>
+                    </div>
+                </div>
+
                 <button onclick="clearHistory()" class="btn-secondary">
                     <span>Limpar Histórico</span>
                 </button>

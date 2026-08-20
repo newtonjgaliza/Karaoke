@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licença Expirada - Karaokê A Toca</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/jpeg" href="/static/images/toca.jpg">
+    <style>
+        :root {
+            --bg-dark: #0e0907;
+            --bg-card: rgba(29, 18, 14, 0.85);
+            --primary: #d19673; /* Warm Amber */
+            --secondary: #e3af66; /* Honey Gold */
+            --text-color: #f7f4f0;
+            --text-muted: #a89b95;
+            --error-color: #ff3c3c;
+            --success-color: #39ff14;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding: 1.5rem;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(209,150,115,0.12) 0%, rgba(227,175,102,0.08) 50%, rgba(0,0,0,0) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(209, 150, 115, 0.15);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .logo-wrapper {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 0 20px rgba(227, 175, 102, 0.3);
+            margin: 0 auto 1.5rem;
+            animation: pulseGlow 3s ease-in-out infinite alternate;
+        }
+
+        .logo {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #000;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1); box-shadow: 0 0 15px rgba(227, 175, 102, 0.2); }
+            100% { transform: scale(1.05); box-shadow: 0 0 30px rgba(209, 150, 115, 0.5); }
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            background: linear-gradient(to right, #fff, var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--secondary);
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background-color: rgba(14, 9, 7, 0.9);
+            border: 1px solid rgba(209, 150, 115, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        input:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 10px rgba(227, 175, 102, 0.2);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            color: #0e0907;
+            font-weight: 800;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(209, 150, 115, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(227, 175, 102, 0.5);
+        }
+
+        .btn-submit:active {
+            transform: translateY(1px);
+        }
+
+        .message {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .message.error {
+            color: var(--error-color);
+            display: block;
+        }
+
+        .message.success {
+            color: var(--success-color);
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <main class="card">
+            <div class="logo-wrapper">
+                <img src="/static/images/toca.jpg" alt="Logo Karaokê A Toca" class="logo">
+            </div>
+            <h1>Ativação Requerida</h1>
+            <p class="subtitle">
+                O aplicativo do <strong>Karaokê A Toca</strong> requer ativação. Insira o código de teste de 3 dias para avaliação ou a chave de licença definitiva para liberar o uso do sistema.
+            </p>
+
+            <form id="activationForm">
+                <div class="input-group">
+                    <label for="licKey">Chave de Ativação</label>
+                    <input type="text" id="licKey" name="key" placeholder="XXXX-XXXX-XXXX-XXXX" required autocomplete="off">
+                </div>
+
+                <button type="submit" class="btn-submit">Ativar Sistema</button>
+                <div id="msg" class="message"></div>
+            </form>
+        </main>
+
+        <footer class="footer">
+            <p>Precisa de uma chave? Entre em contato:</p>
+            <p><a href="mailto:newtonjgaliza@gmail.com">newtonjgaliza@gmail.com</a></p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('activationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const keyInput = document.getElementById('licKey');
+            const msgDiv = document.getElementById('msg');
+            const btn = document.querySelector('.btn-submit');
+            
+            msgDiv.className = 'message';
+            msgDiv.textContent = '';
+            
+            btn.disabled = true;
+            btn.textContent = 'Verificando...';
+
+            fetch('/api/activate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ key: keyInput.value })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Erro na ativação.'); });
+                }
+                return response.json();
+            })
+            .then(result => {
+                msgDiv.className = 'message success';
+                msgDiv.textContent = '✓ Licença ativada! Redirecionando...';
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(error => {
+                msgDiv.className = 'message error';
+                msgDiv.textContent = '✕ ' + error.message;
+                btn.disabled = false;
+                btn.textContent = 'Ativar Sistema';
+            });
+        });
+    </script>
+</body>
+</html>
