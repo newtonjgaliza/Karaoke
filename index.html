@@ -3,13 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fazer Pedido - Karaoke do Attilas</title>
+    <title>Fazer Pedido - Karaokê do Attilas</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#ff007f">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="static/images/logo.png">
+
     <!-- Google Fonts: Outfit for clean interface, DotGothic16 for the retro dot-matrix font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link rel="stylesheet" href="static/css/public.css">
+    <link rel="icon" type="image/png" href="static/images/logo.png">
 </head>
 <body>
     <div class="stars"></div>
@@ -17,7 +25,7 @@
         <!-- Logo and Header -->
         <header class="header">
             <div class="logo-wrapper">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Karaoke do Attilas" class="logo">
+                <img src="static/images/logo.png" alt="Logo Karaokê do Attilas" class="logo">
             </div>
             <h1 class="neon-title">KARAOKE DO ATTILAS</h1>
             <p class="subtitle">Escolha sua música e prepare a garganta!</p>
@@ -85,6 +93,31 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/public.js') }}"></script>
+    <!-- Blocked Modal -->
+    <div id="blockedModal" class="modal">
+        <div class="modal-content" style="border: 2px solid var(--accent); box-shadow: 0 0 30px rgba(255, 111, 71, 0.3);">
+            <div class="modal-icon">🔒</div>
+            <h2>Pedidos Bloqueados</h2>
+            <p>Os pedidos de música estão temporariamente suspensos. Pedidos serão liberados em breve!</p>
+            <button class="btn-modal-close" style="border-color: var(--accent); color: var(--accent);" onmouseover="this.style.backgroundColor='var(--accent)'; this.style.color='#fff'; this.style.boxShadow='0 0 15px var(--accent)'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--accent)'; this.style.boxShadow='none'" onclick="closeBlockedModal()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Supabase Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="static/js/supabase-config.js"></script>
+    <script src="static/js/public.js"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Registra o Service worker com o caminho relativo correto para GitHub Pages
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registrado com sucesso no escopo:', reg.scope))
+                    .catch(err => console.error('Erro ao registrar Service Worker:', err));
+            });
+        }
+    </script>
 </body>
 </html>

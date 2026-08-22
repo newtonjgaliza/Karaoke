@@ -3,13 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin - Karaoke do Attilas</title>
+    <title>Painel Admin - Karaokê do Attilas</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#ff007f">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="static/images/logo.png">
+
     <!-- Google Fonts: Outfit for clean interface, DotGothic16 for the retro dot-matrix font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link rel="stylesheet" href="static/css/admin.css">
+    <link rel="icon" type="image/png" href="static/images/logo.png">
 </head>
 <body>
     <div class="stars"></div>
@@ -17,7 +25,7 @@
         <!-- Sidebar or Header Panel -->
         <aside class="sidebar">
             <div class="brand">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Karaoke" class="logo">
+                <img src="static/images/logo.png" alt="Logo Karaoke" class="logo">
                 <div class="brand-text">
                     <h1 class="retro-font">ATTILAS</h1>
                     <span class="badge">HOST PANEL</span>
@@ -54,10 +62,33 @@
 
             <!-- Quick Action controls -->
             <div class="sidebar-actions">
-                <button onclick="clearHistory()" class="btn-secondary">
-                    <span>Limpar Histórico</span>
-                </button>
-                <a href="/" target="_blank" class="btn-link">Abrir Tela de Pedidos ↗</a>
+                <!-- Compartilhamento do link para Clientes -->
+                <div class="tunnel-card">
+                    <div class="tunnel-header">
+                        <span class="tunnel-title">Acesso dos Clientes</span>
+                        <span class="status-dot active"></span>
+                    </div>
+                    <div>
+                        <div class="tunnel-link-group">
+                            <input type="text" id="clientUrlVal" readonly class="tunnel-input-url">
+                            <button onclick="copyClientUrl()" class="btn-copy" title="Copiar link dos clientes">📋</button>
+                        </div>
+                        <div class="qr-wrapper">
+                            <img id="clientQrCode" src="" alt="QR Code" class="qr-image">
+                            <span class="qr-label">Escaneie para pedir música</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-buttons-row">
+                    <button onclick="clearQueue()" class="btn-secondary btn-danger-action">
+                        <span>Limpar Fila</span>
+                    </button>
+                    <button onclick="clearHistory()" class="btn-secondary">
+                        <span>Limpar Hist.</span>
+                    </button>
+                </div>
+                <a href="index.html" target="_blank" class="btn-link">Abrir Tela de Pedidos ↗</a>
             </div>
 
             <footer class="sidebar-footer" style="font-size: 0.7rem; color: var(--text-muted); text-align: center; border-top: 1px solid var(--border-color); padding-top: 1rem; width: 100%;">
@@ -70,6 +101,16 @@
             <header class="content-header">
                 <h2 class="section-title">Fila de Apresentações</h2>
                 
+                <!-- Toggle Requests Section -->
+                <div class="request-toggle-group">
+                    <button id="btnAllowRequests" onclick="toggleRequests(true)" class="btn-toggle-req">
+                        🟢 Liberar Pedidos
+                    </button>
+                    <button id="btnBlockRequests" onclick="toggleRequests(false)" class="btn-toggle-req">
+                        🔴 Bloquear Pedidos
+                    </button>
+                </div>
+
                 <!-- Search & Filters -->
                 <div class="search-bar">
                     <span class="search-icon">🔍</span>
@@ -103,6 +144,20 @@
         </main>
     </div>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    <!-- Supabase Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="static/js/supabase-config.js"></script>
+    <script src="static/js/admin.js"></script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registrado com sucesso no escopo:', reg.scope))
+                    .catch(err => console.error('Erro ao registrar Service Worker:', err));
+            });
+        }
+    </script>
 </body>
 </html>
