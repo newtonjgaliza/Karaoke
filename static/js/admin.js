@@ -262,3 +262,200 @@ function escapeQuote(text) {
 // Initial polling triggers
 fetchQueue();
 setInterval(fetchQueue, 3000);
+
+// Check trial status
+function checkTrial() {
+    fetch('/api/trial-status')
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('trialBadge');
+            if (!badge) return;
+            if (data.status === 'trial' && data.remaining !== null) {
+                const totalHours = Math.ceil(data.remaining / 3600);
+                badge.style.display = 'block';
+                if (totalHours > 24) {
+                    const days = Math.floor(totalHours / 24);
+                    const hours = totalHours % 24;
+                    badge.innerHTML = `⚠️ Teste: <strong>${days}d ${hours}h</strong> restantes`;
+                } else {
+                    badge.innerHTML = `⚠️ Teste: <strong>${totalHours}h</strong> restantes`;
+                }
+            } else {
+                badge.style.display = 'none';
+            }
+        })
+        .catch(err => console.error('Error fetching trial status:', err));
+}
+checkTrial();
+setInterval(checkTrial, 300000); // Check every 5 minutes
+
+// Ngrok Tunnel Management
+function checkTunnelStatus() {
+    fetch('/api/tunnel')
+        .then(response => response.json())
+        .then(data => {
+            const statusIndicator = document.getElementById('tunnelStatusIndicator');
+            const setupSection = document.getElementById('tunnelSetupSection');
+            const activeSection = document.getElementById('tunnelActiveSection');
+            const urlVal = document.getElementById('tunnelUrlVal');
+            const qrImg = document.getElementById('tunnelQrCode');
+            const tokenInput = document.getElementById('ngrokTokenInput');
+
+            if (!statusIndicator) return;
+
+            if (data.active) {
+                statusIndicator.classList.add('active');
+                setupSection.style.display = 'none';
+                activeSection.style.display = 'block';
+                urlVal.value = data.url;
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(data.url + '/')}`;
+            } else {
+                statusIndicator.classList.remove('active');
+                setupSection.style.display = 'block';
+                activeSection.style.display = 'none';
+                if (data.has_token && !tokenInput.value) {
+                    tokenInput.placeholder = `Salvo: ${data.token_preview}`;
+                }
+            }
+        })
+        .catch(err => console.error('Error checking tunnel status:', err));
+}
+
+function startTunnel() {
+    const tokenInput = document.getElementById('ngrokTokenInput');
+    const btn = document.querySelector('.btn-start');
+    const token = tokenInput.value.trim();
+
+    btn.disabled = true;
+    btn.textContent = 'Iniciando...';
+
+    fetch('/api/tunnel/start', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ authtoken: token })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error || 'Erro ao iniciar túnel.'); });
+        }
+        return response.json();
+    })
+    .then(data => {
+        tokenInput.value = '';
+        checkTunnelStatus();
+    })
+    .catch(error => {
+        alert(error.message);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Ativar Celular 3G/4G';
+    });
+}
+
+function stopTunnel() {
+    const btn = document.querySelector('.btn-stop');
+    btn.disabled = true;
+    btn.textContent = 'Parando...';
+
+    fetch('/api/tunnel/stop', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        checkTunnelStatus();
+    })
+    .catch(err => console.error('Error stopping tunnel:', err))
+    .finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Parar Túnel';
+    });
+}
+
+function copyTunnelUrl() {
+    const urlVal = document.getElementById('tunnelUrlVal');
+    urlVal.select();
+    urlVal.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(urlVal.value)
+        .then(() => {
+            const copyBtn = document.querySelector('.btn-copy');
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = '✓';
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+            }, 1500);
+        })
+        .catch(err => console.error('Failed to copy text:', err));
+}
+
+// Start polling status
+checkTunnelStatus();
+setInterval(checkTunnelStatus, 15000); // Check status every 15 seconds
+
+function clearQueue() {
+    if (!confirm('Deseja limpar todos os pedidos ativos (pendentes e tocando) da fila?')) return;
+    
+    fetch('/api/requests/clear-queue', {
+        method: 'POST'
+    })
+    .then(response => {
+        if (response.ok) {
+            fetchQueue();
+        }
+    })
+    .catch(error => console.error('Erro ao limpar a fila:', error));
+}
+
+function updateRequestStatusUI(enabled) {
+    const btnAllow = document.getElementById('btnAllowRequests');
+    const btnBlock = document.getElementById('btnBlockRequests');
+    if (!btnAllow || !btnBlock) return;
+
+    if (enabled) {
+        btnAllow.style.background = 'rgba(46, 224, 14, 0.15)';
+        btnAllow.style.borderColor = '#2ee00e';
+        btnAllow.style.color = '#fff';
+        btnAllow.style.boxShadow = '0 0 15px rgba(46, 224, 14, 0.3)';
+
+        btnBlock.style.background = 'rgba(255, 255, 255, 0.02)';
+        btnBlock.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        btnBlock.style.color = 'var(--text-muted)';
+        btnBlock.style.boxShadow = 'none';
+    } else {
+        btnAllow.style.background = 'rgba(255, 255, 255, 0.02)';
+        btnAllow.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        btnAllow.style.color = 'var(--text-muted)';
+        btnAllow.style.boxShadow = 'none';
+
+        btnBlock.style.background = 'rgba(255, 60, 60, 0.15)';
+        btnBlock.style.borderColor = 'var(--accent-red)';
+        btnBlock.style.color = '#fff';
+        btnBlock.style.boxShadow = '0 0 15px rgba(255, 60, 60, 0.3)';
+    }
+}
+
+function fetchRequestStatus() {
+    fetch('/api/requests/status')
+        .then(response => response.json())
+        .then(data => updateRequestStatusUI(data.enabled))
+        .catch(err => console.error('Erro ao buscar status dos pedidos:', err));
+}
+
+function toggleRequests(enabled) {
+    fetch('/api/requests/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: enabled })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) updateRequestStatusUI(data.enabled);
+    })
+    .catch(err => console.error('Erro ao alterar status:', err));
+}
+
+// Inicia verificação automática
+fetchRequestStatus();
+setInterval(fetchRequestStatus, 15000);
