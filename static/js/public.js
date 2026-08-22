@@ -38,7 +38,11 @@ document.getElementById('requestForm').addEventListener('submit', function(e) {
         document.getElementById('extra_info').value = '';
     })
     .catch(error => {
-        alert(error.message);
+        if (error.message === 'blocked') {
+            document.getElementById('blockedModal').style.display = 'flex';
+        } else {
+            alert(error.message);
+        }
     })
     .finally(() => {
         // Reset button state
@@ -51,4 +55,8 @@ function closeModal() {
     document.getElementById('successModal').style.display = 'none';
     // Focus back on song name input for convenience
     document.getElementById('song').focus();
+}
+
+function closeBlockedModal() {
+    document.getElementById('blockedModal').style.display = 'none';
 }

@@ -231,6 +231,7 @@ def stop_tunnel_route():
 # In-memory storage fallback
 memory_db = []
 last_id = 0
+requests_enabled = True
 
 def load_data():
     global memory_db, last_id
@@ -303,7 +304,9 @@ def get_requests():
 
 @app.route('/api/requests', methods=['POST'])
 def add_request():
-    global last_id
+    global last_id, requests_enabled
+    if not requests_enabled:
+        return jsonify({'error': 'blocked', 'message': 'Pedidos serão liberados em breve'}), 403
     data = request.get_json() or {}
     name = data.get('name', '').strip()
     song = data.get('song', '').strip()
@@ -380,6 +383,23 @@ def clear_history():
     filtered_data = [item for item in db_data if item.get('status') not in ['completed', 'cancelled']]
     save_data(filtered_data)
     return jsonify({'success': True})
+
+@app.route('/api/requests/clear-queue', methods=['POST'])
+def clear_active_queue():
+    db_data = load_data()
+    # Mantém apenas concluídos e cancelados (remove pendentes e tocando)
+    filtered_data = [item for item in db_data if item.get('status') not in ['pending', 'playing']]
+    save_data(filtered_data)
+    return jsonify({'success': True})
+
+@app.route('/api/requests/status', methods=['GET', 'POST'])
+def requests_status():
+    global requests_enabled
+    if request.method == 'POST':
+        data = request.get_json() or {}
+        requests_enabled = bool(data.get('enabled', True))
+        return jsonify({'success': True, 'enabled': requests_enabled})
+    return jsonify({'enabled': requests_enabled})
 
 if __name__ == '__main__':
     # Inicializa túnel automático se configurado

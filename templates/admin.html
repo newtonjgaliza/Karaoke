@@ -79,6 +79,9 @@
                     </div>
                 </div>
 
+                <button onclick="clearQueue()" class="btn-secondary" style="margin-bottom: 0.5rem; border-color: var(--accent-red); color: var(--accent-red);" onmouseover="this.style.backgroundColor='var(--accent-red)'; this.style.color='#fff'; this.style.boxShadow='0 0 15px rgba(255, 60, 60, 0.4)'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--accent-red)'; this.style.boxShadow='none'">
+                    <span>Limpar Fila</span>
+                </button>
                 <button onclick="clearHistory()" class="btn-secondary">
                     <span>Limpar Histórico</span>
                 </button>
@@ -95,6 +98,16 @@
             <header class="content-header">
                 <h2 class="section-title">Fila de Apresentações</h2>
                 
+                <!-- Toggle Requests Section -->
+                <div class="request-toggle-group" style="display: flex; gap: 0.5rem; align-items: center; margin: 0.5rem 0;">
+                    <button id="btnAllowRequests" onclick="toggleRequests(true)" class="btn-toggle-req" style="padding: 0.6rem 1.2rem; border-radius: 10px; font-family: var(--font-primary); font-weight: 700; font-size: 0.85rem; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.02); color: var(--text-muted); transition: all 0.3s ease;">
+                        🟢 Liberar Pedidos
+                    </button>
+                    <button id="btnBlockRequests" onclick="toggleRequests(false)" class="btn-toggle-req" style="padding: 0.6rem 1.2rem; border-radius: 10px; font-family: var(--font-primary); font-weight: 700; font-size: 0.85rem; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.02); color: var(--text-muted); transition: all 0.3s ease;">
+                        🔴 Bloquear Pedidos
+                    </button>
+                </div>
+
                 <!-- Search & Filters -->
                 <div class="search-bar">
                     <span class="search-icon">🔍</span>

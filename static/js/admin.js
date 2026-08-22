@@ -308,7 +308,7 @@ function checkTunnelStatus() {
                 setupSection.style.display = 'none';
                 activeSection.style.display = 'block';
                 urlVal.value = data.url;
-                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(data.url)}`;
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(data.url + '/')}`;
             } else {
                 statusIndicator.classList.remove('active');
                 setupSection.style.display = 'block';
@@ -393,3 +393,69 @@ function copyTunnelUrl() {
 // Start polling status
 checkTunnelStatus();
 setInterval(checkTunnelStatus, 15000); // Check status every 15 seconds
+
+function clearQueue() {
+    if (!confirm('Deseja limpar todos os pedidos ativos (pendentes e tocando) da fila?')) return;
+    
+    fetch('/api/requests/clear-queue', {
+        method: 'POST'
+    })
+    .then(response => {
+        if (response.ok) {
+            fetchQueue();
+        }
+    })
+    .catch(error => console.error('Erro ao limpar a fila:', error));
+}
+
+function updateRequestStatusUI(enabled) {
+    const btnAllow = document.getElementById('btnAllowRequests');
+    const btnBlock = document.getElementById('btnBlockRequests');
+    if (!btnAllow || !btnBlock) return;
+
+    if (enabled) {
+        btnAllow.style.background = 'rgba(46, 224, 14, 0.15)';
+        btnAllow.style.borderColor = '#2ee00e';
+        btnAllow.style.color = '#fff';
+        btnAllow.style.boxShadow = '0 0 15px rgba(46, 224, 14, 0.3)';
+
+        btnBlock.style.background = 'rgba(255, 255, 255, 0.02)';
+        btnBlock.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        btnBlock.style.color = 'var(--text-muted)';
+        btnBlock.style.boxShadow = 'none';
+    } else {
+        btnAllow.style.background = 'rgba(255, 255, 255, 0.02)';
+        btnAllow.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        btnAllow.style.color = 'var(--text-muted)';
+        btnAllow.style.boxShadow = 'none';
+
+        btnBlock.style.background = 'rgba(255, 60, 60, 0.15)';
+        btnBlock.style.borderColor = 'var(--accent-red)';
+        btnBlock.style.color = '#fff';
+        btnBlock.style.boxShadow = '0 0 15px rgba(255, 60, 60, 0.3)';
+    }
+}
+
+function fetchRequestStatus() {
+    fetch('/api/requests/status')
+        .then(response => response.json())
+        .then(data => updateRequestStatusUI(data.enabled))
+        .catch(err => console.error('Erro ao buscar status dos pedidos:', err));
+}
+
+function toggleRequests(enabled) {
+    fetch('/api/requests/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: enabled })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) updateRequestStatusUI(data.enabled);
+    })
+    .catch(err => console.error('Erro ao alterar status:', err));
+}
+
+// Inicia verificação automática
+fetchRequestStatus();
+setInterval(fetchRequestStatus, 15000);
