@@ -3,6 +3,50 @@ let knownRequestIds = new Set();
 let isInitialLoad = true;
 let requestsEnabled = false;
 
+// Helper to parse device ID and IP from extra_info
+function parseRequestMetadata(extraInfo) {
+    if (!extraInfo) return { displayExtraInfo: '', deviceId: '', ip: '' };
+    const marker = '__meta__';
+    const idx = extraInfo.indexOf(marker);
+    if (idx === -1) {
+        return { displayExtraInfo: extraInfo, deviceId: '', ip: '' };
+    }
+    const displayExtraInfo = extraInfo.substring(0, idx).trim();
+    const metaStr = extraInfo.substring(idx + marker.length);
+    const parts = metaStr.split('||');
+    let deviceId = '';
+    let ip = '';
+    parts.forEach(part => {
+        if (part.startsWith('dev:')) {
+            deviceId = part.substring(4);
+        } else if (part.startsWith('ip:')) {
+            ip = part.substring(3);
+        }
+    });
+    return { displayExtraInfo, deviceId, ip };
+}
+
+// Generate unique identifier key for a request
+function getRequestIdentifier(item) {
+    if (!item) return '';
+    const meta = parseRequestMetadata(item.extra_info);
+    if (meta.deviceId) {
+        return 'dev_' + meta.deviceId;
+    }
+    if (meta.ip && meta.ip !== 'unknown') {
+        return 'ip_' + meta.ip;
+    }
+    return 'name_' + (item.name ? item.name.trim().toLowerCase() : '');
+}
+
+// Count completed songs for a specific requester identifier
+function getTimesSung(item, allRequests) {
+    const id = getRequestIdentifier(item);
+    return allRequests.filter(r => 
+        r.status === 'completed' && getRequestIdentifier(r) === id
+    ).length;
+}
+
 // Web Audio API Synthesizer Chime para novos pedidos
 function playNotificationSound() {
     if (!document.getElementById('audioToggle').checked) return;
@@ -73,7 +117,10 @@ async function fetchQueue() {
 
         // Ordena os dados localmente
         // 1. 'playing' primeiro
-        // 2. 'pending' segundo (por ordem de envio / data de criação)
+        // 2. 'pending' segundo:
+        //    - Prioriza quem tem zero vezes cantadas (sobe na fila)
+        //    - Em caso de empate ou valores diferentes, ordena crescentemente por vezes cantadas
+        //    - Em caso de empate de vezes cantadas, por ordem cronológica de pedido (criado primeiro fica em cima)
         // 3. 'completed' e 'cancelled' por último
         localQueue = data.sort((a, b) => {
             const statusOrder = { 'playing': 1, 'pending': 2, 'completed': 3, 'cancelled': 3 };
@@ -83,6 +130,16 @@ async function fetchQueue() {
             if (orderA !== orderB) {
                 return orderA - orderB;
             }
+
+            if (a.status === 'pending' && b.status === 'pending') {
+                const timesA = getTimesSung(a, data);
+                const timesB = getTimesSung(b, data);
+
+                if (timesA !== timesB) {
+                    return timesA - timesB;
+                }
+            }
+
             return new Date(a.created_at) - new Date(b.created_at);
         });
 
@@ -223,18 +280,20 @@ function renderQueueTable() {
     
     const filteredQueue = localQueue.filter(item => {
         if (!searchVal) return true;
+        const parsedMeta = parseRequestMetadata(item.extra_info);
+        const displayExtraInfo = parsedMeta.displayExtraInfo;
         return (
             item.name.toLowerCase().includes(searchVal) ||
             item.song.toLowerCase().includes(searchVal) ||
             (item.reference && item.reference.toLowerCase().includes(searchVal)) ||
-            (item.extra_info && item.extra_info.toLowerCase().includes(searchVal))
+            (displayExtraInfo && displayExtraInfo.toLowerCase().includes(searchVal))
         );
     });
 
     if (filteredQueue.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" class="empty-state">
+                <td colspan="7" class="empty-state">
                     ${localQueue.length === 0 ? 'Nenhuma música na fila. Aguardando pedidos...' : 'Nenhum pedido correspondente à pesquisa.'}
                 </td>
             </tr>
@@ -248,6 +307,8 @@ function renderQueueTable() {
         const tr = document.createElement('tr');
         if (item.status === 'playing') {
             tr.className = 'row-playing';
+        } else if (item.status === 'completed') {
+            tr.className = 'row-completed';
         }
 
         let actionsHtml = '';
@@ -290,11 +351,36 @@ function renderQueueTable() {
             `;
         }
 
+        const requestTime = item.created_at ? new Date(item.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '-';
+        
+        const parsedMeta = parseRequestMetadata(item.extra_info);
+        const displayExtraInfo = parsedMeta.displayExtraInfo;
+        
+        let tooltipText = '';
+        if (parsedMeta.ip && parsedMeta.ip !== 'unknown') {
+            tooltipText += `IP: ${parsedMeta.ip}`;
+        }
+        if (parsedMeta.deviceId) {
+            if (tooltipText) tooltipText += ' | ';
+            tooltipText += `Dispositivo: ${parsedMeta.deviceId.substring(4, 12)}...`;
+        }
+        if (!tooltipText) tooltipText = 'Identificação legada/por nome';
+
+        const singerCompletedCount = getTimesSung(item, localQueue);
+
+        let badgeClass = 'count-zero';
+        if (singerCompletedCount > 0) {
+            badgeClass = singerCompletedCount >= 3 ? 'count-many' : 'count-has';
+        }
+        const singerBadgeHtml = `<span class="singer-count-badge ${badgeClass}">${singerCompletedCount}</span>`;
+
         tr.innerHTML = `
-            <td>${escapeHtml(item.name)}</td>
+            <td><span title="${tooltipText}" style="cursor: help; border-bottom: 1px dotted rgba(255,255,255,0.2);">${escapeHtml(item.name)}</span></td>
+            <td style="text-align: center;">${singerBadgeHtml}</td>
             <td>${escapeHtml(item.song)}</td>
             <td>${escapeHtml(item.reference || '-')}</td>
-            <td>${escapeHtml(item.extra_info || '-')}</td>
+            <td>${escapeHtml(displayExtraInfo || '-')}</td>
+            <td>${requestTime}</td>
             <td>${actionsHtml}</td>
         `;
 
@@ -302,16 +388,10 @@ function renderQueueTable() {
     });
 }
 
-// Ação: Inicia uma música (coloca em status 'playing', altera as outras 'playing' para 'completed', abre busca no YouTube)
+// Ação: Inicia uma música (coloca em status 'playing', abre busca no YouTube)
 async function playSong(id, song, reference) {
     try {
-        // 1. Atualiza qualquer música que esteja tocando agora para "concluída"
-        await supabaseClient
-            .from('requests')
-            .update({ status: 'completed' })
-            .eq('status', 'playing');
-
-        // 2. Coloca esta música em status 'playing'
+        // Coloca esta música em status 'playing'
         const { error } = await supabaseClient
             .from('requests')
             .update({ status: 'playing' })
@@ -322,7 +402,7 @@ async function playSong(id, song, reference) {
         // Atualiza a visualização local
         fetchQueue();
         
-        // 3. Abre busca do YouTube em nova aba
+        // Abre busca do YouTube em nova aba
         const searchQuery = `karaoke ${song} ${reference}`.trim();
         const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
         window.open(youtubeUrl, '_blank');

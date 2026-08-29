@@ -1,4 +1,4 @@
-const CACHE_NAME = 'attilas-karaoke-v1';
+const CACHE_NAME = 'attilas-karaoke-v2';
 const ASSETS = [
   './',
   './index.html',

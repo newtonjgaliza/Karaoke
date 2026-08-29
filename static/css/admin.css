@@ -345,8 +345,14 @@ input:checked + .slider:before {
     text-align: left;
 }
 
-.queue-table th, .queue-table td {
+.queue-table th {
     padding: 0.9rem 1.5rem;
+}
+
+.queue-table td {
+    padding: 0.9rem 1.5rem;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .queue-table th {
@@ -378,8 +384,48 @@ input:checked + .slider:before {
 }
 
 .row-playing td {
-    font-weight: 600;
-    font-size: 1.25rem;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.row-completed {
+    /* Keep full opacity so the red text is solid and readable */
+}
+
+.row-completed td:not(:nth-child(2)):not(:last-child) {
+    text-decoration: line-through;
+    color: var(--accent-red);
+}
+
+/* Singer Count Badge */
+.singer-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    min-width: 24px;
+    text-align: center;
+}
+
+.singer-count-badge.count-zero {
+    background-color: rgba(57, 255, 20, 0.1);
+    color: var(--accent);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+}
+
+.singer-count-badge.count-has {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.singer-count-badge.count-many {
+    background-color: rgba(0, 240, 255, 0.15);
+    color: var(--secondary);
+    border: 1px solid var(--secondary);
 }
 
 /* Empty or Loading State */
