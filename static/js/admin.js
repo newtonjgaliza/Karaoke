@@ -131,15 +131,6 @@ async function fetchQueue() {
                 return orderA - orderB;
             }
 
-            if (a.status === 'pending' && b.status === 'pending') {
-                const timesA = getTimesSung(a, data);
-                const timesB = getTimesSung(b, data);
-
-                if (timesA !== timesB) {
-                    return timesA - timesB;
-                }
-            }
-
             return new Date(a.created_at) - new Date(b.created_at);
         });
 
