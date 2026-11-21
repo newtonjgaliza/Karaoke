@@ -468,7 +468,12 @@ async function clearQueue() {
 function setupSharing() {
     const currentUrl = window.location.href;
     // Pega o caminho atual e substitui admin.html por index.html
-    const clientUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/index.html';
+    let clientUrl = '';
+    if (currentUrl.includes('admin.html')) {
+        clientUrl = currentUrl.replace('admin.html', 'index.html');
+    } else {
+        clientUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/index.html';
+    }
     
     const urlInput = document.getElementById('clientUrlVal');
     const qrImg = document.getElementById('clientQrCode');
@@ -477,7 +482,7 @@ function setupSharing() {
         urlInput.value = clientUrl;
     }
     if (qrImg) {
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(clientUrl)}`;
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&margin=0&data=${encodeURIComponent(clientUrl)}`;
     }
 }
 

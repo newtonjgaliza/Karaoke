@@ -62,22 +62,12 @@
 
             <!-- Quick Action controls -->
             <div class="sidebar-actions">
-                <!-- Compartilhamento do link para Clientes -->
-                <div class="tunnel-card">
-                    <div class="tunnel-header">
-                        <span class="tunnel-title">Acesso dos Clientes</span>
-                        <span class="status-dot active"></span>
-                    </div>
-                    <div>
-                        <div class="tunnel-link-group">
-                            <input type="text" id="clientUrlVal" readonly class="tunnel-input-url">
-                            <button onclick="copyClientUrl()" class="btn-copy" title="Copiar link dos clientes">📋</button>
-                        </div>
-                        <div class="qr-wrapper">
-                            <img id="clientQrCode" src="" alt="QR Code" class="qr-image">
-                            <span class="qr-label">Escaneie para pedir música</span>
-                        </div>
-                    </div>
+                <input type="hidden" id="clientUrlVal">
+
+                <!-- QR Code dos Clientes -->
+                <div class="qr-wrapper">
+                    <span class="qr-label">Escaneie para cantar</span>
+                    <img id="clientQrCode" src="" alt="QR Code" class="qr-image">
                 </div>
 
                 <div class="sidebar-buttons-row">
