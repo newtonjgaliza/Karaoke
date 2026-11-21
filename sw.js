@@ -1,13 +1,13 @@
-const CACHE_NAME = 'attilas-karaoke-v2.1';
+const CACHE_NAME = 'attilas-karaoke-v2.2';
 const ASSETS = [
   './',
   './index.html',
   './admin.html',
   './static/css/public.css',
-  './static/css/admin.css',
+  './static/css/admin.css?v=2.2',
   './static/js/supabase-config.js',
   './static/js/public.js',
-  './static/js/admin.js',
+  './static/js/admin.js?v=2.2',
   './static/images/logo.png'
 ];
 
